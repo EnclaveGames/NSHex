@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
   repository_dispatch:
-    types: [counter-updated]
+    types: [counter-updated, roulette-updated]
 
 permissions:
   contents: read
