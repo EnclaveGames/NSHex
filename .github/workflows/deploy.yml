@@ -1,0 +1,65 @@
+name: Deploy nshex.enclavegames.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [counter-updated]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: site
+
+      - uses: actions/checkout@v4
+        with:
+          repository: EnclaveGames/NSHex-Counter
+          ref: main
+          path: counter-src
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: counter-src/package-lock.json
+
+      - name: Build NSHex Counter
+        working-directory: counter-src
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble site
+        run: |
+          mkdir -p public/counter/src/plugins
+          rsync -a --exclude='.git' --exclude='.github' --exclude='README.md' site/ public/
+          cd counter-src
+          cp index.html favicon.png ept.webmanifest ../public/counter/
+          cp -r img fonts sfx icons ../public/counter/
+          cp src/nshexcounter.min.js src/phaser.3.90.min.js src/start.js ../public/counter/src/
+          cp src/plugins/webfont.js ../public/counter/src/plugins/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
