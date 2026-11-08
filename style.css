@@ -1,0 +1,11 @@
+body { background: #000 url(img/pattern.png) repeat; margin: 0 auto; text-align: center; color: #ccc; }
+h1 { color: #ccc; }
+.enclavegames { display: block; margin-bottom: 0px; }
+.enclavegames img { width: 127px; }
+.neuroshimahex { display: block; margin: 40px 0; }
+.neuroshimahex img { width: 250px; }
+.nshexcounter { display: block; margin-bottom: 40px; }
+.nshexcounter img { border-radius: 5px; }
+
+h2 a { color: #ccc; text-decoration: none; border-bottom: 1px solid #666; }
+h2 a:hover { color: #ddd; text-decoration: none; border-bottom: 1px solid #999; }
