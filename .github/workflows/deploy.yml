@@ -56,6 +56,7 @@ jobs:
             out=public/$app
             mkdir -p $out/src/plugins
             cp $app-src/index.html $app-src/favicon.png $app-src/ept.webmanifest $out/
+            [ -f $app-src/sw.js ] && cp $app-src/sw.js $out/
             cp -r $app-src/img $app-src/fonts $app-src/sfx $app-src/icons $out/
             cp $app-src/src/*.min.js $app-src/src/start.js $out/src/
             cp $app-src/src/plugins/webfont.js $out/src/plugins/
