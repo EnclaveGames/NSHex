@@ -33,27 +33,33 @@ jobs:
           ref: main
           path: counter-src
 
+      - uses: actions/checkout@v4
+        with:
+          repository: EnclaveGames/NSHex-Roulette
+          ref: main
+          path: roulette-src
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: counter-src/package-lock.json
 
-      - name: Build NSHex Counter
-        working-directory: counter-src
+      - name: Build apps
         run: |
-          npm ci
-          npm run build
+          for app in counter roulette; do
+            (cd $app-src && npm ci && npm run build)
+          done
 
       - name: Assemble site
         run: |
-          mkdir -p public/counter/src/plugins
           rsync -a --exclude='.git' --exclude='.github' --exclude='README.md' site/ public/
-          cd counter-src
-          cp index.html favicon.png ept.webmanifest ../public/counter/
-          cp -r img fonts sfx icons ../public/counter/
-          cp src/nshexcounter.min.js src/phaser.3.90.min.js src/start.js ../public/counter/src/
-          cp src/plugins/webfont.js ../public/counter/src/plugins/
+          for app in counter roulette; do
+            out=public/$app
+            mkdir -p $out/src/plugins
+            cp $app-src/index.html $app-src/favicon.png $app-src/ept.webmanifest $out/
+            cp -r $app-src/img $app-src/fonts $app-src/sfx $app-src/icons $out/
+            cp $app-src/src/*.min.js $app-src/src/start.js $out/src/
+            cp $app-src/src/plugins/webfont.js $out/src/plugins/
+          done
 
       - uses: actions/configure-pages@v5
 
